@@ -35,13 +35,13 @@ module baud (
 		);
 
 	u_xmit 	xmit(
-		.sys_rst(sys_rst_l), .xmitH(xmitH), .xmit_dataH(xmit_dataH),							//Main_inputs
+		.sys_rst_l(sys_rst_l), .xmitH(xmitH), .xmit_dataH(xmit_dataH),							//Main_inputs
 		.uart_XMIT_dataH(uart_XMIT_dataH), .xmit_doneH(xmit_doneH), .xmit_active(xmit_active)	//Main_outputs
 		.baud_xmit(baud_xmit)																	//Wires
 		);
 
 	u_rec	rec(
-		.sys_rst(sys_rst_l), .xmitH(xmitH), .uart_REC_dataH(uart_REC_dataH),		//Main_inputs
+		.sys_rst_l(sys_rst_l), .xmitH(xmitH), .uart_REC_dataH(uart_REC_dataH),		//Main_inputs
 		.rec_readyH(rec_readyH), .rec_busy(rec_busy), .rec_dataH(rec_dataH)			//Main_outputs
 		.baud_rec(baud_rec)															//Wires
 		);
