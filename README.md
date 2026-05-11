@@ -1,4 +1,4 @@
-# Micro UART Design
+# Micro UART Design Specification
 
 ### baudrate 1200 2400 9600 19200
 ### default 2400
