@@ -28,8 +28,8 @@ module baud (
 	wire 
 
 	u_baud	baud(
-		.sys_rst_l(sys_rst_l), .sys_clk(sys_clk),		//Main_inputs
-		.baud_ticks(baud_ticks)							//Wires
+		.sys_rst_l(sys_rst_l), .xmitH(xmitH), .sys_clk(sys_clk),		//Main_inputs
+		.baud_ticks(baud_ticks)											//Wires
 		);
 
 	u_xmit 	xmit(
