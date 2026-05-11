@@ -43,8 +43,7 @@ clock domain (tx) => recievers
 bit cell center -> rx sample data bit
 
 ## WAVEFORM
-(docs/images/img1.png)
-
+![WAVEFORM](docs/images/img1.png)
 	
 	
 	
