@@ -33,11 +33,14 @@ module baud (
             end
 			else if (count_rec == cycles_rec)
                 begin
-                baud_rec = 0;
+                baud_rec = 1;
                 count_rec = 0;
                 end
             else 
+				begin
+                baud_rec = 1;
                 count_rec = count_rec + 1;
+                end
         end
 
 	lways@(posedge sys_clk or posedge sys_rst_l)
@@ -47,13 +50,16 @@ module baud (
                 baud_xmit = 0;
                 count_xmit = 0;
             end
-			else if (count_rec == cycles_rec)
+			else if (count_xmit == cycles_xmit)
                 begin
-                baud_xmit = 0;
+                baud_xmit = 1;
                 count_xmit = 0;
                 end
             else 
+				begin
+                baud_xmit = 0;
                 count_xmit = count_xmit + 1;
+				end
         end
                 
 endmodule
