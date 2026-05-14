@@ -1,133 +1,63 @@
-`default_nettype none
+`timescale 1ns / 1ps
 
-module u_rec #(
-    parameter DATA_LEN = 8
-)(
-    input  wire                     sys_clk,
-    input  wire                     sys_rst_l,
-    input  wire                     xmitH,
-    input  wire                     baud_rec,
-    input  wire                     uart_REC_dataH,
-
-    output wire                     rec_readyH,
-    output wire                     rec_busy,
-    output reg [DATA_LEN-1:0]       rec_dataH
+module tb #
+(parameter data_len = 8
 );
+reg sys_clk, sys_rst_l;
+reg xmitH;
+reg [data_len-1:0] xmit_dataH;
+
+wire uart_XMIT_dataH;
+wire xmit_doneH;
+wire xmit_active;
+
+wire baud_rec;
+wire baud_xmit;
+
+wire uart_REC_dataH;
+wire rec_readyH;
+wire rec_busy;
+wire [data_len-1:0]rec_dataH;
+
+
+baud dut(.sys_rst_l(sys_rst_l), .sys_clk(sys_clk), .baud_rec(baud_rec), .baud_xmit(baud_xmit));
+
+u_xmit 	xmit(
+		.sys_rst_l(sys_rst_l), .xmitH(xmitH), .xmit_dataH(xmit_dataH),							//Main_inputs
+		.uart_XMIT_dataH(uart_XMIT_dataH), .xmit_doneH(xmit_doneH), .xmit_active(xmit_active),	//Main_outputs
+		.baud_xmit(baud_xmit)																	//Wires
+		);
 		
-    localparam IDLE  = 2'b00;
-    localparam START = 2'b01;
-    localparam REC   = 2'b10;
-    localparam STOP  = 2'b11;
+u_rec	rec(
+		.sys_clk(sys_clk), .sys_rst_l(sys_rst_l), .xmit_active(xmit_active), .uart_REC_dataH(uart_REC_dataH),		//Main_inputs
+		.rec_readyH(rec_readyH), .rec_busy(rec_busy), .rec_dataH(rec_dataH),			//Main_outputs
+		.baud_rec(baud_rec)															//Wires
+		);
 
-    reg [1:0] CS, NS;
-    reg [3:0] sample_cnt;
-    reg [$clog2(DATA_LEN):0] bit_cnt;
-    reg [DATA_LEN-1:0] temp_register;
+assign uart_REC_dataH = uart_XMIT_dataH; 
 
-    always @(posedge sys_clk or negedge sys_rst_l)
-    begin
-        if (!sys_rst_l)
-            CS <= IDLE;
-        else
-            CS <= NS;
-    end
+initial sys_clk = 0;
+always #5 sys_clk = ~sys_clk;
 
-    always @(*)
-    begin
-        NS = CS;
+initial begin
+@(posedge sys_clk);
+sys_rst_l = 1;
 
-        case (CS)
+@(posedge sys_clk);
+sys_rst_l = 0;
 
-            IDLE:
-            begin
-                if (xmitH && uart_REC_dataH == 1'b0)
-                    NS = START;
-            end
+@(posedge sys_clk);
+xmitH = 1;
 
-            START:
-            begin
-                if (baud_rec && sample_cnt == 4'd15)
-                    NS = REC;
-            end
+@(posedge sys_clk);
+xmit_dataH = 8'h0f;
 
-            REC:
-            begin
-                if (baud_rec &&
-                    bit_cnt == DATA_LEN &&
-                    sample_cnt == 4'd15)
-                    NS = STOP;
-            end
+#1000000;
+xmitH = 0;
 
-            STOP:
-            begin
-                if (baud_rec && sample_cnt == 4'd15)
-                    NS = IDLE;
-            end
 
-            default:
-                NS = IDLE;
 
-        endcase
-    end
-    
-    always @(posedge sys_clk or negedge sys_rst_l)
-    begin
-        if (!sys_rst_l)
-        begin
-            sample_cnt    <= 0;
-            bit_cnt       <= 0;
-            temp_register <= 0;
-            rec_dataH     <= 0;
-        end
 
-        else if (baud_rec)
-        begin
-            case (CS)
-                IDLE:
-                begin
-                    sample_cnt <= 0;
-                    bit_cnt    <= 0;
-                end
-
-                START:
-                begin
-                    sample_cnt <= sample_cnt + 1'b1;
-
-                    if (sample_cnt == 4'd15)
-                        sample_cnt <= 0;
-                end
-
-                REC:
-                begin
-                    sample_cnt <= sample_cnt + 1'b1;
-
-                    // sample at middle of baud
-                    if (sample_cnt == 4'd8)
-                    begin
-                        temp_register[bit_cnt] <= uart_REC_dataH;
-                        bit_cnt <= bit_cnt + 1'b1;
-                    end
-
-                    if (sample_cnt == 4'd15)
-                        sample_cnt <= 0;
-                end
-
-                STOP:
-                begin
-                    sample_cnt <= sample_cnt + 1'b1;
-
-                    if (sample_cnt == 4'd15)
-                    begin
-                        rec_dataH  <= temp_register;
-                        sample_cnt <= 0;
-                    end
-                end
-
-            endcase
-        end
-    end
-
-    assign rec_readyH = (CS == IDLE);
-    assign rec_busy   = (CS != IDLE);
+end
 
 endmodule
