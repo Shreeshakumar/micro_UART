@@ -1,32 +1,31 @@
 `default_nettype none
 
-module uart #(
+module uart #(		//default values
 	parameter baudrate	 	= 2400,
 	parameter data_len 	    = 8,
-	parameter clock_rate 	= 100000000,  //100 Mhz	
+	parameter clock_rate 	= 100_000_000,  //100 Mhz	
 	parameter oversample 	= 16
 )(
 
 	input wire 	sys_clk,			//main sys clock
-			sys_rst_l,			//main sys reset
-			xmitH,				//active high -> uart clock with baudrate pulse starts the trasmit process
-			uart_REC_dataH,		//asynchromous input data
+			    sys_rst_l,			//main sys reset
+			    xmitH,				//active high -> uart clock with baudrate pulse starts the trasmit process
+			    uart_REC_dataH,		//asynchromous input data
 	input wire	[data_len - 1:0]xmit_dataH,	//data to be sent, This data is sample when xmith high
 
-	output wire	uart_XMIT_dataH,	//ouput asynchronous transmitter
-			xmit_doneH,			//when active high thhis indictes that the xmit_dataH has been fully transmitted
-			rec_readyH,			//when high indicates fresh data is available on rec_dataH 
-			rec_busy,			//indicatedd if the receiver is currently busy
-			xmit_active,		//indicates if the transmitter is actively transmitting a data
+	output wire	uart_XMIT_dataH,		//ouput asynchronous transmitter
+			    xmit_doneH,				//when active high thhis indictes that the xmit_dataH has been fully transmitted
+				rec_readyH,				//when high indicates fresh data is available on rec_dataH 
+				rec_busy,				//indicatedd if the receiver is currently busy
+				xmit_active,			//indicates if the transmitter is actively transmitting a data
 	output wire	[data_len - 1:0]rec_dataH		//de-serialized recieved from the remote
-	
 			);
 
 wire baud_rec,baud_xmit;
 
 	baud	baud(
 		.sys_rst_l(sys_rst_l), .sys_clk(sys_clk),		//Main_inputs
-		.baud_rec(baud_rec), .baud_xmit(baud_xmit)						//Wires
+		.baud_rec(baud_rec), .baud_xmit(baud_xmit)		//Wires
 		);
 
 	u_xmit 	xmit(
