@@ -20,9 +20,9 @@ module baud #(		//default values
     //initial $display(cycles_xmit,"cycles of rx");
 	//initial $display(cycles_rec,"cycles of rx");
 
-    always@(posedge sys_clk or posedge sys_rst_l)
+	always@(posedge sys_clk or negedge sys_rst_l)
         begin
-        if (sys_rst_l)
+			if (~sys_rst_l)
             begin
                 baud_rec <= 0;
                 count_rec <= 0;
@@ -39,9 +39,9 @@ module baud #(		//default values
                 end
         end
 
-	always@(posedge sys_clk or posedge sys_rst_l)
+	always@(posedge sys_clk or negedge sys_rst_l)
         begin
-        if (sys_rst_l)
+			if (~sys_rst_l)
             begin
                 baud_xmit <= 0;
                 count_xmit <= 0;
