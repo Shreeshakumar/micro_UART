@@ -27,15 +27,35 @@ module u_rec #(		//default values
     reg [$clog2(data_len)-1:0]   bit_cnt;
     reg [data_len-1:0]           temp;
 
-    always @(posedge sys_clk or posedge sys_rst_l)
+	always @(posedge sys_clk or negedge sys_rst_l)
     begin
-        if (sys_rst_l)
+		if (~sys_rst_l)
             CS <= IDLE;
         else
             CS <= NS;
     end
 
-    always @(posedge sys_clk or posedge sys_rst_l)
+    always @(*)
+    begin
+        NS = CS; 
+        case (CS)
+            IDLE:    if (xmit_active && uart_REC_dataH == 1'b0)
+                            NS = START;
+
+            START:   if (baud_rec && sample_cnt == sampling - 1)
+                            NS = REC;
+
+            REC:     if (baud_rec && sample_cnt == sampling - 1 && bit_cnt == DATA_LEN - 1)
+                            NS = STOP;
+
+            STOP:    if (baud_rec && sample_cnt == sampling - 1 && uart_REC_dataH == 1'b1)
+                            NS = IDLE;
+
+            default:    NS = IDLE;
+        endcase
+    end
+	
+	always @(posedge sys_clk or posedge sys_rst_l)
     begin
         if (sys_rst_l) 
             begin
@@ -92,26 +112,6 @@ module u_rec #(		//default values
                         end
             endcase
         end
-    end
-
-    always @(*)
-    begin
-        NS = CS; 
-        case (CS)
-            IDLE:    if (xmit_active && uart_REC_dataH == 1'b0)
-                            NS = START;
-
-            START:   if (baud_rec && sample_cnt == sampling - 1)
-                            NS = REC;
-
-            REC:     if (baud_rec && sample_cnt == sampling - 1 && bit_cnt == DATA_LEN - 1)
-                            NS = STOP;
-
-            STOP:    if (baud_rec && sample_cnt == sampling - 1 && uart_REC_dataH == 1'b1)
-                            NS = IDLE;
-
-            default:    NS = IDLE;
-        endcase
     end
 
     assign rec_readyH = (CS == IDLE);
