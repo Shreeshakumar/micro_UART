@@ -55,9 +55,9 @@ module u_rec #(		//default values
         endcase
     end
 	
-	always @(posedge sys_clk or posedge sys_rst_l)
+	always @(posedge sys_clk or negedge sys_rst_l)
     begin
-        if (sys_rst_l) 
+		if (~sys_rst_l) 
             begin
             sample_cnt <= 'd0;
             bit_cnt    <= 'd0;
