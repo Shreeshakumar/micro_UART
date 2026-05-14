@@ -25,9 +25,9 @@ reg [1:0] state;
 reg [data_len-1:0] data_ts;
 reg [$clog2(data_len)-1:0] count_ts;
 
-always @(posedge baud_xmit or posedge sys_rst_l)
+	always @(posedge baud_xmit or negedge sys_rst_l)
 begin
-    if(sys_rst_l)
+	if(~sys_rst_l)
     begin
         state <= IDLE;
         uart_XMIT_dataH <= 1'b1;
