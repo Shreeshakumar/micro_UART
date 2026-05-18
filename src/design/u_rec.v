@@ -4,12 +4,12 @@ module u_rec #(		//default values
 	parameter baudrate	 	= 2400,
 	parameter data_len 	    = 8,
 	parameter clock_rate 	= 100_000_000,  //100 Mhz	
-	parameter oversample 	= 16
+	parameter sampling 	= 16
 )(
     input  wire                     sys_clk,
     input  wire                     sys_rst_l,
     input  wire                     xmit_active,
-    input  wire                     baud_rec,
+    input  wire                     baud_tick,
     input  wire                     uart_REC_dataH,
 
     output wire                     rec_readyH,
@@ -23,9 +23,11 @@ module u_rec #(		//default values
     localparam STOP  = 2'b11;
 
     reg [1:0] CS, NS;
-    reg [$clog2(oversample)-1:0]   sample_cnt;
+    reg [$clog2(sampling)-1:0]   sample_cnt;
     reg [$clog2(data_len)-1:0]   bit_cnt;
     reg [data_len-1:0]           temp;
+    
+    reg a;
 
 	always @(posedge sys_clk or negedge sys_rst_l)
     begin
@@ -42,13 +44,13 @@ module u_rec #(		//default values
             IDLE:    if (xmit_active && uart_REC_dataH == 1'b0)
                             NS = START;
 
-            START:   if (baud_rec && sample_cnt == sampling - 1)
+            START:   if (baud_tick && sample_cnt == sampling - 1)
                             NS = REC;
 
-            REC:     if (baud_rec && sample_cnt == sampling - 1 && bit_cnt == DATA_LEN - 1)
+            REC:     if (baud_tick && sample_cnt == sampling - 2 && bit_cnt == data_len - 1)
                             NS = STOP;
 
-            STOP:    if (baud_rec && sample_cnt == sampling - 1 && uart_REC_dataH == 1'b1)
+            STOP:    if (baud_tick && sample_cnt == sampling - 1 && uart_REC_dataH == 1'b1)
                             NS = IDLE;
 
             default:    NS = IDLE;
@@ -69,13 +71,13 @@ module u_rec #(		//default values
 
                 IDLE: begin
                         if (xmit_active && uart_REC_dataH == 1'b0) 
-                            sample_cnt <= 'd0;
+                            begin sample_cnt <= 'd0; temp       <= 'd0; end
                         end
 
                 START: begin
-                        if (baud_rec) 
+                        if (baud_tick) 
                             begin
-                            if (sample_cnt == oversample - 1) 
+                            if (sample_cnt == sampling - 1) 
                                 begin
                                 sample_cnt <= 'd0;
                                 bit_cnt    <= 'd0;
@@ -86,14 +88,15 @@ module u_rec #(		//default values
                         end
 
                 REC: begin
-                        if (baud_rec) 
+                        if (baud_tick) 
                             begin
-                            if (sample_cnt == oversample - 1) 
+                            if (sample_cnt == sampling - 2) 
                                 begin
+                                a <= 1;
                                 temp[bit_cnt] <= uart_REC_dataH;
                                 bit_cnt       <= bit_cnt + 1'b1;
                                 sample_cnt    <= 'd0;
-                                    if (bit_cnt == DATA_LEN - 1) 
+                                    if (bit_cnt == data_len - 1) 
                                         rec_dataH <= {uart_REC_dataH, temp[data_len-2:0]};
                                 end 
                             else 
@@ -102,7 +105,7 @@ module u_rec #(		//default values
                     end
 
                 STOP: begin
-                        if (baud_rec) 
+                        if (baud_tick) 
                             begin
                             if (sample_cnt == sampling - 1) 
                                 sample_cnt <= 'd0;
