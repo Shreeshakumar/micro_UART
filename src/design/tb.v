@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 module tb#(		//default values
-	parameter baudrate	 	= 2400,
+	parameter baudrate	 	= 9600,
 	parameter data_len 	    = 8,
 	parameter clock_rate 	= 100_000_000,  //100 Mhz	
 	parameter sampling 	= 16
@@ -21,19 +21,14 @@ module tb#(		//default values
 	wire rec_busy;
 	wire [data_len-1:0]rec_dataH;
 
-baud dut(.sys_rst_l(sys_rst_l), .sys_clk(sys_clk), .baud_tick(baud_tick));
-
-u_xmit 	xmit(
-		.sys_rst_l(sys_rst_l), .xmitH(xmitH), .xmit_dataH(xmit_dataH),							//Main_inputs
-		.uart_XMIT_dataH(uart_XMIT_dataH), .xmit_doneH(xmit_doneH), .xmit_active(xmit_active),	//Main_outputs
-		.baud_tick(baud_tick)																	//Wires
-		);
-		
-u_rec	rec(
-		.sys_clk(sys_clk), .sys_rst_l(sys_rst_l), .xmit_active(xmit_active), .uart_REC_dataH(uart_REC_dataH),		//Main_inputs
-		.rec_readyH(rec_readyH), .rec_busy(rec_busy), .rec_dataH(rec_dataH),			//Main_outputs
-		.baud_tick(baud_tick)															//Wires
-		);
+uart    #(
+        .baudrate(baudrate), .data_len(data_len), .clock_rate(clock_rate), .sampling(sampling)
+        )
+        uart(
+        .sys_clk(sys_clk),.sys_rst_l(sys_rst_l),.xmitH(xmitH),
+        .uart_REC_dataH(uart_REC_dataH),.xmit_dataH(xmit_dataH) ,.uart_XMIT_dataH(uart_XMIT_dataH) ,
+        .xmit_doneH(xmit_doneH) ,.rec_readyH(rec_readyH) ,.rec_busy(rec_busy) ,.xmit_active(xmit_active) ,.rec_dataH(rec_dataH)
+        );
 
 assign uart_REC_dataH = uart_XMIT_dataH; //equal equal
 
