@@ -21,3 +21,6 @@
 	-> configuration file	(header file)
 	-> baudrate	default 2400
 	-> data_length 8
+
+## WAVEFORM
+![WAVEFORM](../../docs/images/design_wave.png)
