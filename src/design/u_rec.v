@@ -5,7 +5,7 @@ module u_rec #(		//default values
 	parameter data_len 	    = 8,
 	parameter clock_rate 	= 100_000_000,  //100 Mhz	
 	parameter sampling 	= 16
-)(
+)(  
     input  wire                     sys_clk,
     input  wire                     sys_rst_l,
     input  wire                     xmit_active,
