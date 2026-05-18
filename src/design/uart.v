@@ -4,7 +4,7 @@ module uart #(		//default values
 	parameter baudrate	 	= 2400,
 	parameter data_len 	    = 8,
 	parameter clock_rate 	= 100_000_000,  //100 Mhz	
-	parameter oversample 	= 16
+	parameter sampling 	= 16
 )(
 
 	input wire 	sys_clk,			//main sys clock
@@ -21,23 +21,29 @@ module uart #(		//default values
 	output wire	[data_len - 1:0]rec_dataH		//de-serialized recieved from the remote
 			);
 
-wire baud_rec,baud_xmit;
+wire baud_tick;
 
-	baud	baud(
-		.sys_rst_l(sys_rst_l), .sys_clk(sys_clk),		//Main_inputs
-		.baud_rec(baud_rec), .baud_xmit(baud_xmit)		//Wires
-		);
+baud    #(
+        .baudrate(baudrate), .data_len(data_len), .clock_rate(clock_rate), .sampling(sampling)
+        )
+        baud(.sys_rst_l(sys_rst_l), .sys_clk(sys_clk), .baud_tick(baud_tick));
 
-	u_xmit 	xmit(
+u_xmit 	#(
+        .baudrate(baudrate), .data_len(data_len), .clock_rate(clock_rate), .sampling(sampling)
+        )
+        xmit(
 		.sys_rst_l(sys_rst_l), .xmitH(xmitH), .xmit_dataH(xmit_dataH),							//Main_inputs
 		.uart_XMIT_dataH(uart_XMIT_dataH), .xmit_doneH(xmit_doneH), .xmit_active(xmit_active),	//Main_outputs
-		.baud_xmit(baud_xmit)																	//Wires
+		.baud_tick(baud_tick)																	//Wires
 		);
-
-	u_rec	rec(
-		.sys_rst_l(sys_rst_l), .xmit_active(xmit_active), .uart_XMIT_dataH(uart_REC_dataH),		//Main_inputs
-		.rec_readyH(rec_readyH), .rec_busy(rec_busy), .rec_dataH(rec_dataH)			//Main_outputs
-		.baud_rec(baud_rec)															//Wires
+		
+u_rec	#(
+        .baudrate(baudrate), .data_len(data_len), .clock_rate(clock_rate), .sampling(sampling)
+        )
+        rec(
+		.sys_clk(sys_clk), .sys_rst_l(sys_rst_l), .xmit_active(xmit_active), .uart_REC_dataH(uart_REC_dataH),		//Main_inputs
+		.rec_readyH(rec_readyH), .rec_busy(rec_busy), .rec_dataH(rec_dataH),			//Main_outputs
+		.baud_tick(baud_tick)															//Wires
 		);
 
 endmodule
