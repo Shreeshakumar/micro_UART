@@ -28,10 +28,10 @@
 		
 ## Data packet
 
-start bit	1->0
-data bit	8b
-parity bit	p
-stop bit	0->1				
+start bit	0  
+data bit	8b  
+parity bit	p  
+stop bit	1	  			
 	
 internal clock 16x than baud rate =>   1/16 granularity in baud rate period
 
