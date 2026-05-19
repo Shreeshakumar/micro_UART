@@ -23,7 +23,6 @@ module u_rec (
     
     reg match;
     reg previous_REC;
-    wire start_trigger = !uart_REC_dataH & previous_REC ; 
     
 	always @(posedge sys_clk or negedge sys_rst_l)
 	   begin 
@@ -31,7 +30,7 @@ module u_rec (
 		   previous_REC<=uart_REC_dataH; 
 		end
 
-    always @(*) if(CS == IDLE) NS = (start_trigger) ? START : IDLE;
+    always @(*) if(CS == IDLE) NS = (!uart_REC_dataH & previous_REC) ? START : IDLE;
 	
 	always @(posedge baud_tick or negedge sys_rst_l)
     begin
@@ -47,7 +46,7 @@ module u_rec (
             case (CS)
 
                 IDLE: begin
-                        if (start_trigger && uart_REC_dataH == 1'b0) 
+                        if (!uart_REC_dataH & previous_REC && uart_REC_dataH == 1'b0) 
                             begin sample_cnt <= 'd0; temp <= 'd0; match <= 0; end
                         end
 
