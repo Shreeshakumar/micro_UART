@@ -1,20 +1,14 @@
 `default_nettype none
 
-module u_rec #(		//default values
-	parameter baudrate	 	= 2400,
-	parameter data_len 	    = 8,
-	parameter clock_rate 	= 100_000_000,  //100 Mhz	
-	parameter sampling 	= 16
-)(  
+module u_rec (
     input  wire                     sys_clk,
     input  wire                     sys_rst_l,
-    input  wire                     xmit_active,
     input  wire                     baud_tick,
     input  wire                     uart_REC_dataH,
 
     output wire                     rec_readyH,
     output wire                     rec_busy,
-    output reg  [data_len-1:0]      rec_dataH      
+    output reg  [`data_len-1:0]      rec_dataH      
 );
 
     localparam IDLE  = 2'b00;
@@ -23,41 +17,23 @@ module u_rec #(		//default values
     localparam STOP  = 2'b11;
 
     reg [1:0] CS, NS;
-    reg [$clog2(sampling)-1:0]   sample_cnt;
-    reg [$clog2(data_len)-1:0]   bit_cnt;
-    reg [data_len-1:0]           temp;
+    reg [$clog2(`sampling)-1:0]   sample_cnt;
+    reg [$clog2(`data_len):0]   bit_cnt;
+    reg [`data_len-1:0]           temp;
     
-    reg a;
-
+    reg match;
+    reg previous_REC;
+    wire start_trigger = !uart_REC_dataH & previous_REC ; 
+    
 	always @(posedge sys_clk or negedge sys_rst_l)
-    begin
-		if (~sys_rst_l)
-            CS <= IDLE;
-        else
-            CS <= NS;
-    end
+	   begin 
+	       CS <= (~sys_rst_l)? IDLE : NS ;
+		   previous_REC<=uart_REC_dataH; 
+		end
 
-    always @(*)
-    begin
-        NS = CS; 
-        case (CS)
-            IDLE:    if (xmit_active && uart_REC_dataH == 1'b0)
-                            NS = START;
-
-            START:   if (baud_tick && sample_cnt == sampling - 1)
-                            NS = REC;
-
-            REC:     if (baud_tick && sample_cnt == sampling - 2 && bit_cnt == data_len - 1)
-                            NS = STOP;
-
-            STOP:    if (baud_tick && sample_cnt == sampling - 1 && uart_REC_dataH == 1'b1)
-                            NS = IDLE;
-
-            default:    NS = IDLE;
-        endcase
-    end
+    always @(*) if(CS == IDLE) NS = (start_trigger) ? START : IDLE;
 	
-	always @(posedge sys_clk or negedge sys_rst_l)
+	always @(posedge baud_tick or negedge sys_rst_l)
     begin
 		if (~sys_rst_l) 
             begin
@@ -65,53 +41,65 @@ module u_rec #(		//default values
             bit_cnt    <= 'd0;
             temp       <= 'd0;
             rec_dataH  <= 'd0;
+            match      <= 0;
             end
         else begin
             case (CS)
 
                 IDLE: begin
-                        if (xmit_active && uart_REC_dataH == 1'b0) 
-                            begin sample_cnt <= 'd0; temp       <= 'd0; end
+                        if (start_trigger && uart_REC_dataH == 1'b0) 
+                            begin sample_cnt <= 'd0; temp <= 'd0; match <= 0; end
                         end
 
                 START: begin
-                        if (baud_tick) 
-                            begin
-                            if (sample_cnt == sampling - 1) 
+                            if (sample_cnt == `sampling - 1) 
                                 begin
                                 sample_cnt <= 'd0;
                                 bit_cnt    <= 'd0;
+                                match <= 0;
+                                NS <= (match)? REC : IDLE;
                                 end 
-                            else 
+                            else if (sample_cnt == `sampling / 2) 
+                                begin
+                                match <= (uart_REC_dataH == 1'd0)? 1 : 0;
                                 sample_cnt <= sample_cnt + 'd1;
-                            end
+                                end 
+                            else
+                                sample_cnt <= sample_cnt + 'd1;
                         end
 
                 REC: begin
-                        if (baud_tick) 
+                            if (sample_cnt == `sampling - 1) 
                             begin
-                            if (sample_cnt == sampling - 2) 
+                                NS <= (bit_cnt == `data_len )? STOP : REC;
+                                sample_cnt <= sample_cnt + 'd1;
+                                end
+                            else if (sample_cnt == `sampling / 2) 
                                 begin
-                                a <= 1;
                                 temp[bit_cnt] <= uart_REC_dataH;
                                 bit_cnt       <= bit_cnt + 1'b1;
-                                sample_cnt    <= 'd0;
-                                    if (bit_cnt == data_len - 1) 
-                                        rec_dataH <= {uart_REC_dataH, temp[data_len-2:0]};
+                                sample_cnt <= sample_cnt + 'd1;
                                 end 
                             else 
                                 sample_cnt <= sample_cnt + 'd1;
                             end
-                    end
 
                 STOP: begin
-                        if (baud_tick) 
-                            begin
-                            if (sample_cnt == sampling - 1) 
+                            if (sample_cnt == `sampling - 1) 
+                                begin
                                 sample_cnt <= 'd0;
-                            else 
+                                match <= 0;
+                                rec_dataH  <= (match)? temp: 'd0;
+                                temp  <= (match)? temp: 'd0;
+                                NS <= IDLE;
+                                end 
+                            else if (sample_cnt == `sampling / 2) 
+                                begin
+                                match <= (uart_REC_dataH == 1'd1)? 1 : 0;
                                 sample_cnt <= sample_cnt + 'd1;
-                            end
+                                end 
+                            else
+                                sample_cnt <= sample_cnt + 'd1;
                         end
             endcase
         end
