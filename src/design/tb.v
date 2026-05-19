@@ -1,14 +1,11 @@
 `timescale 1ns / 1ps
 
-module tb#(		//default values
-	parameter baudrate	 	= 9600,
-	parameter data_len 	    = 8,
-	parameter clock_rate 	= 100_000_000,  //100 Mhz	
-	parameter sampling 	= 16
-);
+`include "inc.h"
+
+module tb;
 	reg sys_clk, sys_rst_l;
 	reg xmitH;
-	reg [data_len-1:0] xmit_dataH;
+	reg [`data_len-1:0] xmit_dataH;
 	
 	wire uart_XMIT_dataH;
 	wire xmit_doneH;
@@ -19,12 +16,9 @@ module tb#(		//default values
 	wire uart_REC_dataH;
 	wire rec_readyH;
 	wire rec_busy;
-	wire [data_len-1:0]rec_dataH;
+	wire [`data_len-1:0]rec_dataH;
 
-uart    #(
-        .baudrate(baudrate), .data_len(data_len), .clock_rate(clock_rate), .sampling(sampling)
-        )
-        uart(
+uart    uart(
         .sys_clk(sys_clk),.sys_rst_l(sys_rst_l),.xmitH(xmitH),
         .uart_REC_dataH(uart_REC_dataH),.xmit_dataH(xmit_dataH) ,.uart_XMIT_dataH(uart_XMIT_dataH) ,
         .xmit_doneH(xmit_doneH) ,.rec_readyH(rec_readyH) ,.rec_busy(rec_busy) ,.xmit_active(xmit_active) ,.rec_dataH(rec_dataH)
@@ -46,7 +40,7 @@ sys_rst_l = 1;
 xmitH = 0;
 
 @(posedge sys_clk);
-xmit_dataH = 8'h0f;
+xmit_dataH = 8'hff;
 
 @(posedge sys_clk);
 xmitH = 1;
