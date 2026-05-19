@@ -25,80 +25,71 @@ reg [$clog2(`data_len)-1:0] count_ts;
 reg [3:0]count;
 
 reg previous_xmitH;
+always @(posedge xmitH)		previous_xmitH<=1;          
 
-	always @(posedge xmitH)
-	begin	           
-			   previous_xmitH<=1;          
-    end
-
-	always @(posedge baud_tick or negedge sys_rst_l)
+always @(posedge baud_tick or negedge sys_rst_l)
 begin
 	if(~sys_rst_l)
-    begin
-        state <= IDLE;
-        uart_XMIT_dataH <= 1'b1;
-        count_ts <= 0;
-        data_ts <= 0;
-        count <= 4'd0;
-    end
+    	begin
+        	state <= IDLE;
+        	uart_XMIT_dataH <= 1'b1;
+        	count_ts <= 0;
+        	data_ts <= 0;
+        	count <= 4'd0;
+    	end
 
     else
     begin
         case(state)
-            IDLE:    begin
-                    if(count == 4'b1111)
-                    begin
-                        count <= 4'd0;
-                        uart_XMIT_dataH <= 1'b1;
-                     if(previous_xmitH)
-                        begin
-                            data_ts <= xmit_dataH;
-                            count_ts <= 0;
-                            state <= START;
-                            previous_xmitH <= 0;
-                        end
-                    end
-                    else
-                        begin state <= IDLE;    count <= count + 1'b1;  end
+            IDLE:   begin
+                    	if(count == 4'b1111)
+                    		begin
+                        		count <= 4'd0;
+                        		uart_XMIT_dataH <= 1'b1;
+                     			if(previous_xmitH)
+                        			begin
+                            			data_ts <= xmit_dataH;
+                            			count_ts <= 0;
+                            			state <= START;
+                            			previous_xmitH <= 0;
+                        			end
+                    		end
+                    	else
+                        	begin state <= IDLE;    count <= count + 1'b1;  end
                     end
 
             START:    begin
-                        if(count == 4'b1111)
-                        begin
-                        count <= 4'd0;
-                            uart_XMIT_dataH <= 1'b0;
-                            state <= SEND;
-                        end
-                      else
-                        begin state <= START;    count <= count + 1'b1;  end
-
-                    end
+                		if(count == 4'b1111)
+                        	begin
+                        		count <= 4'd0;
+                            	uart_XMIT_dataH <= 1'b0;
+                            	state <= SEND;
+                        	end
+                      	else
+                        	begin state <= START;    count <= count + 1'b1;  end
+    				end
 
             SEND:    begin
-            if(count == 4'b1111)
-                        begin
-                        count <= 4'd0;
-                        uart_XMIT_dataH <= data_ts[count_ts];
-                    if(count_ts == `data_len-1)
-                        state <= STOP;
-                    else
-                        count_ts <= count_ts + 1;
-                    end
-                    else
-                        begin state <= SEND;    count <= count + 1'b1;  end
-
-                    end
+            			if(count == 4'b1111)
+                        	begin
+                        		count <= 4'd0;
+                        		uart_XMIT_dataH <= data_ts[count_ts];
+                    			if(count_ts == `data_len-1)		state <= STOP;
+                    			else							count_ts <= count_ts + 1;
+                    		end
+        				else
+                        	begin state <= SEND;    count <= count + 1'b1;  end
+					end
 
             STOP:    begin
-            if(count == 4'b1111)
-                        begin
-                        count <= 4'd0;
-                        uart_XMIT_dataH <= 1'b1;
-                        state <= IDLE;
-                    end
-                    else
-                        begin state <= STOP;    count <= count + 1'b1;  end
-
+            			if(count == 4'b1111)
+                        	begin
+                        		count <= 4'd0;
+                        		uart_XMIT_dataH <= 1'b1;
+                        		state <= IDLE;
+                    		end
+                    	else
+                        	begin state <= STOP;    count <= count + 1'b1;  end
                     end
 
             default:    state <= IDLE;
