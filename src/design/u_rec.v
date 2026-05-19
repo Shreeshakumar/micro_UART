@@ -8,7 +8,7 @@ module u_rec (
 
     output wire                     rec_readyH,
     output wire                     rec_busy,
-    output reg  [`data_len-1:0]      rec_dataH      
+    output reg  [`data_len-1:0]     rec_dataH      
 );
 
     localparam IDLE  = 2'b00;
@@ -16,12 +16,12 @@ module u_rec (
     localparam REC   = 2'b10;
     localparam STOP  = 2'b11;
     
-    reg rec_temp = 0;
-    reg FF = 0;
+    reg rec_temp = 0;	//FF2
+    reg FF = 0;			//FF1
     reg [1:0] CS, NS;
-    reg [$clog2(`sampling)-1:0]   sample_cnt;
-    reg [$clog2(`data_len):0]   bit_cnt;
-    reg [`data_len-1:0]           temp;
+    reg [$clog2(`sampling)-1:0]   	sample_cnt;
+	reg [$clog2(`data_len):0]   	bit_cnt;
+    reg [`data_len-1:0]           	temp;
     
     reg match;
     reg previous_REC;
@@ -34,11 +34,8 @@ module u_rec (
 		   rec_temp <= FF;
 		end
 		
-		always @(posedge baud_tick )
-	   begin 
-		   FF <= uart_REC_dataH;
-		   rec_temp <= FF;
-		end
+	always @(posedge baud_tick )
+	   begin 	FF <= uart_REC_dataH;	rec_temp <= FF;		end
 
     always @(*) if(CS == IDLE) NS = (!rec_temp & previous_REC) ? START : IDLE; 
 	
@@ -46,66 +43,66 @@ module u_rec (
     begin
 		if (~sys_rst_l) 
             begin
-            sample_cnt <= 'd0;
-            bit_cnt    <= 'd0;
-            temp       <= 'd0;
-            rec_dataH  <= 'd0;
-            match      <= 0;
+            	sample_cnt <= 'd0;
+            	bit_cnt    <= 'd0;
+            	temp       <= 'd0;
+            	rec_dataH  <= 'd0;
+            	match      <= 'd0;
             end
-        else begin
-            case (CS)
+        else 
+			begin
+            	case (CS)
+                	IDLE: begin
+                        	if (!rec_temp & previous_REC && rec_temp == 1'b0) 
+                            	begin sample_cnt <= 'd0; temp <= 'd0; match <= 0; end
+                        	end
 
-                IDLE: begin
-                        if (!rec_temp & previous_REC && rec_temp == 1'b0) 
-                            begin sample_cnt <= 'd0; temp <= 'd0; match <= 0; end
-                        end
-
-                START: begin
+                	START: begin
                             if (sample_cnt == `sampling - 1) 
                                 begin
-                                sample_cnt <= 'd0;
-                                bit_cnt    <= 'd0;
-                                match <= 0;
-                                NS <= (match)? REC : IDLE;
+                                	sample_cnt <= 'd0;
+                                	bit_cnt    <= 'd0;
+                                	match <= 0;
+                                	NS <= (match)? REC : IDLE;
                                 end 
                             else if (sample_cnt == (`sampling / 2)-2) 
                                 begin
-                                match <= (rec_temp == 1'd0)? 1 : 0;
-                                sample_cnt <= sample_cnt + 'd1;
+                                	match <= (rec_temp == 1'd0)? 1 : 0;
+                                	sample_cnt <= sample_cnt + 'd1;
                                 end 
                             else
                                 sample_cnt <= sample_cnt + 'd1;
-                        end
+                        	end
 
-                REC: begin
+                	REC: begin
                             if (sample_cnt == `sampling - 1) 
-                            begin
-                                NS <= (bit_cnt == `data_len )? STOP : REC;
-                                sample_cnt <= sample_cnt + 'd1;
+                            	begin
+                                	NS <= (bit_cnt == `data_len )? STOP : REC;
+                                	sample_cnt <= sample_cnt + 'd1;
                                 end
                             else if (sample_cnt == (`sampling / 2)-2) 
                                 begin
-                                temp[bit_cnt] <= rec_temp;
-                                bit_cnt       <= bit_cnt + 1'b1;
-                                sample_cnt <= sample_cnt + 'd1;
+                                	temp[bit_cnt] <= rec_temp;
+                                	bit_cnt       <= bit_cnt + 1'b1;
+                                	sample_cnt <= sample_cnt + 'd1;
                                 end 
                             else 
                                 sample_cnt <= sample_cnt + 'd1;
                             end
 
-                STOP: begin
+                	STOP: begin
                             if (sample_cnt == `sampling - 1) 
                                 begin
-                                sample_cnt <= 'd0;
-                                match <= 0;
-                                rec_dataH  <= (match)? temp: 'd0;
-                                temp  <= 'd0;
-                                NS <= IDLE;
+                                	sample_cnt <= 'd0;
+                                	match <= 0;
+                                	rec_dataH  <= (match)? temp: 'd0;
+                                	temp  <= 'd0;
+                                	NS <= IDLE;
                                 end 
                             else if (sample_cnt == (`sampling / 2)-2) 
                                 begin
-                                match <= (rec_temp == 1'd1)? 1 : 0;
-                                sample_cnt <= sample_cnt + 'd1;
+                                	match <= (rec_temp == 1'd1)? 1 : 0;
+                                	sample_cnt <= sample_cnt + 'd1;
                                 end 
                             else
                                 sample_cnt <= sample_cnt + 'd1;
