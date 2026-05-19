@@ -45,5 +45,9 @@ xmit_dataH = 8'h0f;
 @(posedge sys_clk);
 xmitH = 1;
 
+@(posedge sys_clk);
+xmitH = 0;
+
+
 end
 endmodule
