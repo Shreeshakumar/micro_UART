@@ -48,7 +48,7 @@ begin
             IDLE:    begin
                     if(count == 4'b1111)
                     begin
-                        count <= 4'd0;////////////////////////////////////////////////////////////////////////////////////////////
+                        count <= 4'd0;
                         uart_XMIT_dataH <= 1'b1;
                      if(previous_xmitH)
                         begin
@@ -59,25 +59,25 @@ begin
                         end
                     end
                     else
-                        begin state <= IDLE;    count <= count + 1'b1;  end////////////////////////////////////////////////////////////////
+                        begin state <= IDLE;    count <= count + 1'b1;  end
                     end
 
             START:    begin
                         if(count == 4'b1111)
                         begin
-                        count <= 4'd0;////////////////////////////////////////////////////////////////////////////////////////////
+                        count <= 4'd0;
                             uart_XMIT_dataH <= 1'b0;
                             state <= SEND;
                         end
                       else
-                        begin state <= START;    count <= count + 1'b1;  end////////////////////////////////////////////////////////////////
+                        begin state <= START;    count <= count + 1'b1;  end
 
                     end
 
             SEND:    begin
             if(count == 4'b1111)
                         begin
-                        count <= 4'd0;////////////////////////////////////////////////////////////////
+                        count <= 4'd0;
                         uart_XMIT_dataH <= data_ts[count_ts];
                     if(count_ts == `data_len-1)
                         state <= STOP;
@@ -85,19 +85,19 @@ begin
                         count_ts <= count_ts + 1;
                     end
                     else
-                        begin state <= SEND;    count <= count + 1'b1;  end////////////////////////////////////////////////////////////////
+                        begin state <= SEND;    count <= count + 1'b1;  end
 
                     end
 
             STOP:    begin
             if(count == 4'b1111)
                         begin
-                        count <= 4'd0;////////////////////////////////////////////////////////////////
+                        count <= 4'd0;
                         uart_XMIT_dataH <= 1'b1;
                         state <= IDLE;
                     end
                     else
-                        begin state <= STOP;    count <= count + 1'b1;  end////////////////////////////////////////////////////////////////
+                        begin state <= STOP;    count <= count + 1'b1;  end
 
                     end
 
