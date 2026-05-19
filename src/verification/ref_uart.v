@@ -2,7 +2,7 @@
 
 `include "inc.h"
 
-module uart (
+module ref_uart (
 
 	input wire 	sys_clk,			//main sys clock
 			    sys_rst_l,			//main sys reset
