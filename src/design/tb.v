@@ -31,7 +31,7 @@ always #10 sys_clk = ~sys_clk;
 
 initial begin
 @(posedge sys_clk);
-sys_rst_l = 0;
+sys_rst_l = 0;xmitH = 1;
 
 @(posedge sys_clk);
 sys_rst_l = 1;
@@ -40,7 +40,7 @@ sys_rst_l = 1;
 xmitH = 0;
 
 @(posedge sys_clk);
-xmit_dataH = 8'hff;
+xmit_dataH = 8'h0f;
 
 @(posedge sys_clk);
 xmitH = 1;
