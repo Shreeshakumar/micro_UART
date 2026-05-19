@@ -40,7 +40,7 @@ sys_rst_l = 1;
 xmitH = 0;
 
 @(posedge sys_clk);
-xmit_dataH = 8'h0f;
+xmit_dataH = 8'h55;
 
 @(posedge sys_clk);
 xmitH = 1;
