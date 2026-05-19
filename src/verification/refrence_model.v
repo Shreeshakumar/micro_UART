@@ -22,12 +22,12 @@ module uart (
 
 //baud    baud(.sys_rst_l(sys_rst_l), .sys_clk(sys_clk), .baud_tick(baud_tick));
 
-u_xmit 	xmit(
+ref_xmit 	ref_xmit(
 		.sys_clk(sys_clk),.sys_rst_l(sys_rst_l), .xmitH(xmitH), .xmit_dataH(xmit_dataH),							//Main_inputs
 		.uart_XMIT_dataH(uart_XMIT_dataH), .xmit_doneH(xmit_doneH), .xmit_active(xmit_active)	//Main_outputs
 		);
 		
-u_rec	rec(
+ref_rec	ref_rec(
 		.sys_clk(sys_clk), .sys_rst_l(sys_rst_l), .uart_REC_dataH(uart_REC_dataH),		//Main_inputs
 		.rec_readyH(rec_readyH), .rec_busy(rec_busy), .rec_dataH(rec_dataH)			//Main_outputs
 		);
