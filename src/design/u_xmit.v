@@ -24,6 +24,13 @@ reg [$clog2(`data_len)-1:0] count_ts;
 
 reg [3:0]count;
 
+reg previous_xmitH;
+
+	always @(posedge xmitH)
+	begin	           
+			   previous_xmitH<=1;          
+    end
+
 	always @(posedge baud_tick or negedge sys_rst_l)
 begin
 	if(~sys_rst_l)
@@ -43,11 +50,12 @@ begin
                     begin
                         count <= 4'd0;////////////////////////////////////////////////////////////////////////////////////////////
                         uart_XMIT_dataH <= 1'b1;
-                     if(xmitH)
+                     if(previous_xmitH)
                         begin
                             data_ts <= xmit_dataH;
                             count_ts <= 0;
                             state <= START;
+                            previous_xmitH <= 0;
                         end
                     end
                     else
