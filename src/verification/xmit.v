@@ -1,7 +1,6 @@
 `timescale 1ns / 1ps
-
 `default_nettype none
-module xmit #(parameter WIDTH = 8)(
+module xmit #(parameter WIDTH = 8, SAMPLE=16)(
     input  wire clk_baud,
     input  wire rst,
     input  wire xmitH,
@@ -13,7 +12,7 @@ module xmit #(parameter WIDTH = 8)(
     localparam IDLE  = 2'b00, START = 2'b01, DATA  = 2'b10, STOP  = 2'b11;
 
     reg [1:0] state;
-    reg [3:0] baud_count;      // counts 0 -> 15 for tx
+    reg [$clog2(SAMPLE)-1:0] baud_count;      // counts 0 -> 15 for tx
     reg [$clog2(WIDTH)-1:0] bit_count;       // counts data bits
     reg [WIDTH-1:0] tx_shift;
     
@@ -54,13 +53,13 @@ module xmit #(parameter WIDTH = 8)(
 
             START: begin
                 uart_XMIT_dataH <= 1'b0;
-                if(baud_count == 15)
+                if(baud_count == SAMPLE-1)
                     state <= DATA;
             end
 
             DATA: begin
                 uart_XMIT_dataH <= tx_shift[0];
-                if(baud_count == 15) begin
+                if(baud_count == SAMPLE-1) begin
                     tx_shift <= tx_shift >> 1;
                     if(bit_count == WIDTH-1) begin
                         bit_count <= 0;
@@ -73,7 +72,7 @@ module xmit #(parameter WIDTH = 8)(
 
             STOP: begin
                 uart_XMIT_dataH <= 1'b1;
-                if(baud_count == 15) begin
+                if(baud_count == SAMPLE-1) begin
                     if(xmitH)begin
                         tx_shift <= xmit_dataH;
                         state <= START;
