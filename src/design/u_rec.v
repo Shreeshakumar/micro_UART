@@ -26,18 +26,23 @@ module u_rec (
     reg match;
     reg previous_REC;
     
-	always @(posedge sys_clk or negedge sys_rst_l)
+	always @(posedge baud_tick or negedge sys_rst_l)
 	   begin 
-	   	   CS <= (~sys_rst_l)? IDLE : NS ;
-		   previous_REC<=rec_temp; 
-		   FF <= uart_REC_dataH;
-		   rec_temp <= FF;
-		end
-		
-		always @(posedge baud_tick )
-	   begin 
-		   FF <= uart_REC_dataH;
-		   rec_temp <= FF;
+		   if(~sys_rst_l)
+			   begin
+				CS <= IDLE;
+		   		previous_REC<='d0; 
+		   		FF <= 'd0;
+		   		rec_temp <= 'd0;
+		   	end
+			else
+			begin 	
+				CS <= NS;
+	   	   		//CS <= (~sys_rst_l)? IDLE : NS ;
+		   		previous_REC<=rec_temp; 
+		   		FF <= uart_REC_dataH;
+		   		rec_temp <= FF;
+			end
 		end
 
     always @(*) if(CS == IDLE) NS = (!rec_temp & previous_REC) ? START : IDLE; 
