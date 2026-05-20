@@ -11,7 +11,7 @@ module baud (
 	localparam  cycles = (`clock_rate/(`baudrate*`sampling)) ;//cycle is bit time * clock
 
 	reg [$clog2(cycles)-1:0] count;
-
+    
 	always@(posedge sys_clk or negedge sys_rst_l)
         begin
 			if (~sys_rst_l)
