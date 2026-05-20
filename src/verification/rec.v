@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 
 `default_nettype none
-module rec #(parameter WIDTH = 8)(
+module rec #(parameter WIDTH = 8, SAMPLE=16)(
     input  wire clk_baud,  
     input  wire rst,
     input  wire uart_REC_dataH,
@@ -13,7 +13,7 @@ module rec #(parameter WIDTH = 8)(
     localparam IDLE  = 2'b00, START = 2'b01, DATA  = 2'b10, STOP  = 2'b11;
 
     reg [1:0] state;
-    reg [3:0] baud_count;
+    reg [$clog2(SAMPLE)-1:0] baud_count;
     reg [$clog2(WIDTH)-1:0] bit_count;
     reg [WIDTH-1:0] rx_shift;
     reg ff1,ff2;
@@ -39,7 +39,6 @@ module rec #(parameter WIDTH = 8)(
             rec_dataH <= 0;
             rec_readyH <= 1'b1;
             rec_busy <= 0;
-	    a<=0;
         end
         else begin
             case(state)
@@ -54,7 +53,7 @@ module rec #(parameter WIDTH = 8)(
             end
 	    
 	    START: begin
-    		if(baud_count == 4) begin
+    		if(baud_count == (SAMPLE/2)-4) begin
         		baud_count <= 0;
         	if(ff2 == 0)
             		state <= DATA;
@@ -70,7 +69,7 @@ module rec #(parameter WIDTH = 8)(
 
 
             DATA: begin
-    		if(baud_count == 15) begin
+    		if(baud_count == SAMPLE-1) begin
         		baud_count <= 0;
         		rx_shift <= {ff2, rx_shift[WIDTH-1:1]};
         		if(bit_count == WIDTH-1) begin
@@ -84,7 +83,7 @@ module rec #(parameter WIDTH = 8)(
         		baud_count <= baud_count + 1;
 		end
             STOP: begin
-    		if(baud_count == 15) begin
+    		if(baud_count == SAMPLE-1) begin
         		baud_count <= 0;
         		if(ff2 == 1) begin
             			rec_dataH <= rx_shift;
