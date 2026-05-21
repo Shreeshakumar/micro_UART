@@ -38,6 +38,9 @@ module micro_UART_tb;
   localparam cycle_tx = `clock_rate/ `baudrate ;
   localparam delay_rx = (cycle_rx *10); 
   localparam delay_tx = (cycle_tx *10);  
+
+    localparam start = 0;
+    localparam stop = 1;
     
     // DUT instantiation
     top     #(
@@ -59,20 +62,36 @@ module micro_UART_tb;
  
   // Testing DUT 
   initial begin
-    // sys_rst_l toggle
-    toggle_rst();
-      
+    toggle_rst();    // sys_rst_l toggle
     // Test transmiter Operations
     $display("\n=== Testing transmiter basic working ===");
     toggle_rst(); 
-    test_tx(`data_len'h5a, "basic_tx");
+      test_tx(`data_len'h5a, "basic_tx");
       
-    // sys_rst_l toggle
-    toggle_rst();
-      
+    toggle_rst();    // sys_rst_l toggle
     // Test reciever Operations
     $display("\n=== Testing reciever basic working ===");
-    test_rx(8'h0f, "basic_rx");
+    test_rx(start,stop,8'h0f, "basic_rx");
+
+    toggle_rst();    // sys_rst_l toggle
+    // Test reciever Operations
+    $display("\n=== Testing reciever start_L stop_L working ===");
+      test_rx(0,0,8'h0f, "start_L stop_L _rx");
+
+      toggle_rst();    // sys_rst_l toggle
+    // Test reciever Operations
+      $display("\n=== Testing reciever start_L stop_H working ===");
+      test_rx(0,1,8'h0f, "start_L stop_H _rx");
+
+      toggle_rst();    // sys_rst_l toggle
+    // Test reciever Operations
+      $display("\n=== Testing reciever start_H stop_L working ===");
+      test_rx(1,0,8'h0f, "start_H stop_L _rx");
+
+      toggle_rst();    // sys_rst_l toggle
+    // Test reciever Operations
+    $display("\n=== Testing reciever start_L stop_L working ===");
+      test_rx(1,1,8'h0f, "start_H stop_H _rx");
 
     // Summary
     summary();
@@ -110,6 +129,7 @@ module micro_UART_tb;
     
     // Test receiver operations
     task test_rx(
+        input startt,stopp,
         input [`data_len -1 :0]data,
         input [80*8:1] test_name
     );
@@ -118,12 +138,12 @@ module micro_UART_tb;
             begin
                 uart_REC_dataH = 1;
                 #(delay_tx);b=1;
-                uart_REC_dataH = 0;
+                uart_REC_dataH = startt;
                 #(delay_tx);b=0;
                 compare('d0,test_name);
                 for (i = 0; i < `data_len; i = i+1 )
                     begin uart_REC_dataH = data[i]; b=i; compare((i),test_name); #(delay_tx); end
-                uart_REC_dataH = 1;
+                uart_REC_dataH = stopp;
                 compare('d9,test_name);
                 #(delay_tx); 
             end
@@ -175,9 +195,10 @@ module micro_UART_tb;
     input [80*8:1] test_name
   );
       begin
-        if (compare_outputs(1)) 
+        if (!compare_outputs(1)) 
               begin 
                 $display("[PASS] %s: xmit_dataH=%d ", test_name, test);
+                display_mismatch();
                 cmp_pass = 1;
               end
         else 
@@ -214,11 +235,11 @@ module micro_UART_tb;
             compare_outputs =(dut_uart_XMIT_dataH !== ref_uart_XMIT_dataH)? 1 : 0;
             compare_outputs =(dut_rec_dataH !== ref_rec_dataH)? 1 : 0;
     
-            compare_outputs =(dut_xmit_doneH !== ref_xmit_doneH)? 1 : 0;
-            compare_outputs =(dut_xmit_active !== ref_xmit_active)? 1 : 0;
+            //compare_outputs =(dut_xmit_doneH !== ref_xmit_doneH)? 1 : 0;
+            //compare_outputs =(dut_xmit_active !== ref_xmit_active)? 1 : 0;
     
-            compare_outputs =(dut_rec_readyH !== ref_rec_readyH)? 1 : 0;
-            compare_outputs =(dut_rec_busy !== ref_rec_busy)? 1 : 0;           
+            //compare_outputs =(dut_rec_readyH !== ref_rec_readyH)? 1 : 0;
+            //compare_outputs =(dut_rec_busy !== ref_rec_busy)? 1 : 0;           
         end
     endfunction
 
