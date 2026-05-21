@@ -34,7 +34,10 @@ module micro_UART_tb;
     localparam delay_apply_rec = (cycle_apply_rec*10)/`sampling;
     
     // DUT instantiation
-    top    DUT_uart(
+    top     #(
+        .WIDTH(`data_len), .BAUD(`baudrate), .SAMPLE(`sampling), .FREQ(`clock_rate)
+    )   
+    DUT_uart(
         .sys_clk(sys_clk), .sys_rst_l(sys_rst_l), .xmitH(xmitH),
         .xmit_dataH(xmit_dataH),
         .uart_REC_dataH(uart_REC_dataH), 
