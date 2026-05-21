@@ -1,4 +1,5 @@
 `default_nettype none
+`include "inc.h"
 
 module u_rec (
     input  wire                     sys_clk,
