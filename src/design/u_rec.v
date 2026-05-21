@@ -46,7 +46,7 @@ module u_rec (
 			end
 		end
 
-    always @(*) if(CS == IDLE) NS = (!rec_temp & previous_REC) ? START : IDLE; 
+	always @(*) if(CS == IDLE) NS <= (!rec_temp & previous_REC) ? START : IDLE; 
 	
 	always @(posedge baud_tick or negedge sys_rst_l)
     begin
