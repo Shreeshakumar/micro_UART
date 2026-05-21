@@ -2,7 +2,7 @@
 `include "inc.h"
 
 module u_rec (
-    input  wire                     sys_clk,
+    /*input  wire                     sys_clk,*/
     input  wire                     sys_rst_l,
     input  wire                     baud_tick,
     input  wire                     uart_REC_dataH,//uart_REC_dataHH
