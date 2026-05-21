@@ -18,31 +18,36 @@ module micro_UART_tb;
     wire dut_rec_busy;
     
     // Reference mode signals
-    reg ref_uart_XMIT_dataH;
-    reg [`data_len - 1 : 0]ref_rec_dataH;
-    reg ref_xmit_doneH;
-    reg ref_xmit_active;
-    reg ref_rec_readyH;
-    reg ref_rec_busy;
+    reg ref_uart_XMIT_dataH = 'd0;
+    reg [`data_len - 1 : 0]ref_rec_dataH= 'd0;
+    reg ref_xmit_doneH= 'd0;
+    reg ref_xmit_active= 'd0;
+    reg ref_rec_readyH= 'd0;
+    reg ref_rec_busy= 'd0;
+
+    reg a,b;
 
     // Test counters
     integer pass_count = 0;
     integer fail_count = 0;
     integer test_count = 0;
 
-  localparam cycle =`clock_rate / (`baudrate * `sampling);
-  localparam delay_rx = (cycle *10); 
-  localparam delay_tx = delay_rx/`sampling; 
+    reg cmp_pass = 0;
+
+  localparam cycle_rx = `clock_rate/ (`baudrate * `sampling);
+  localparam cycle_tx = `clock_rate/ `baudrate ;
+  localparam delay_rx = (cycle_rx *10); 
+  localparam delay_tx = (cycle_tx *10);  
     
     // DUT instantiation
     top     #(
         .WIDTH(`data_len), .BAUD(`baudrate), .SAMPLE(`sampling), .FREQ(`clock_rate)
     )   
     DUT_uart(
-        .sys_clk(sys_clk), .sys_rst_l(sys_rst_l), .xmitH(xmitH),
+        .clk(sys_clk), .rst(sys_rst_l), .xmitH(xmitH),
         .xmit_dataH(xmit_dataH),
-        .uart_REC_dataH(uart_REC_dataH), 
-        .uart_XMIT_dataH(dut_uart_XMIT_dataH),
+        .uart_rx(uart_REC_dataH), 
+        .uart_tx(dut_uart_XMIT_dataH),
         .rec_dataH(dut_rec_dataH),
         .xmit_doneH(dut_xmit_doneH), .xmit_active(dut_xmit_active),
         .rec_readyH(dut_rec_readyH), .rec_busy(dut_rec_busy)
@@ -61,11 +66,14 @@ module micro_UART_tb;
     $display("\n=== Testing transmiter basic working ===");
     toggle_rst(); 
     test_tx(`data_len'h5a, "basic_tx");
-  /*
+      
+    // sys_rst_l toggle
+    toggle_rst();
+      
     // Test reciever Operations
     $display("\n=== Testing reciever basic working ===");
-    test_reciever(8'h0f, "basix_rx");
-*/
+    test_rx(8'h0f, "basic_rx");
+
     // Summary
     summary();
     #10000 $finish;
@@ -86,55 +94,48 @@ module micro_UART_tb;
             begin
                 ref_uart_XMIT_dataH = 1;
                 @(posedge xmitH);    ref_uart_XMIT_dataH = 0;
+                #(delay_tx);a=1;
+                compare('d0,test_name);
                 for (i = 0; i < `data_len; i = i+1 )
-                    begin ref_uart_XMIT_dataH = data[i]; # delay_tx; end
+                    begin ref_uart_XMIT_dataH = data[i]; a=i; compare((i+1),test_name); #(delay_tx); end
                 ref_uart_XMIT_dataH = 1;
+                compare('d9,test_name);
+                #(delay_tx); 
             end
         join 
-        scoreboard();
+            //a=1;
+            scoreboard(data,test_name);
         end
     endtask
-    /*
-    // Test reciever operations
-    task test_reciever(
+    
+    // Test receiver operations
+    task test_rx(
         input [`data_len -1 :0]data,
         input [80*8:1] test_name
     );
-        begin
-              #delay_apply_rec;
-        uart_REC_dataH = 1;     sys_rst_l = 0;
-              #delay_apply_rec; sys_rst_l = 1;
-              #delay_apply_rec;
-        uart_REC_dataH = 0; 
-              #delay_apply_rec;
-        uart_REC_dataH = data[0];
-              #delay_apply_rec;
-        uart_REC_dataH = data[ 1];
-              #delay_apply_rec;
-        uart_REC_dataH = data[2];
-              #delay_apply_rec;
-        uart_REC_dataH = data[3];
-              #delay_apply_rec;
-        uart_REC_dataH = data[4];
-              #delay_apply_rec;
-        uart_REC_dataH = data[5];
-              #delay_apply_rec;
-        uart_REC_dataH = data[6];
-              #delay_apply_rec;
-        uart_REC_dataH = data[7];
-        #delay_apply_rec;
-        uart_REC_dataH = 1;
-        #delay_apply_rec;
-            scoreboard();
+        integer i;
+        begin fork
+            begin
+                uart_REC_dataH = 1;
+                #(delay_tx);b=1;
+                uart_REC_dataH = 0;
+                #(delay_tx);b=0;
+                compare('d0,test_name);
+                for (i = 0; i < `data_len; i = i+1 )
+                    begin uart_REC_dataH = data[i]; a=i; compare((i),test_name); #(delay_tx); end
+                uart_REC_dataH = 1;
+                compare('d9,test_name);
+                #(delay_tx); 
+            end
+            begin
+                #(delay_tx);#(delay_tx);#(delay_tx);#(delay_tx);#(delay_tx);#(delay_tx);#(delay_tx);#(delay_tx);#(delay_tx);#(delay_tx);#(delay_tx);
+                ref_rec_dataH = data;
+            end
+        join 
+            //a=1;
+            scoreboard(data,test_name);
         end
     endtask
-
-*/
-
-
-
-
-
   
   task toggle_rst();
     begin
@@ -142,6 +143,18 @@ module micro_UART_tb;
       @(posedge sys_clk);   sys_rst_l = 1;        // Release reset
       @(posedge sys_clk);   sys_rst_l = 0;
       @(posedge sys_clk);   sys_rst_l = 1;        // Release reset
+
+        // Reference mode signals
+     ref_uart_XMIT_dataH = 'd0;
+     ref_rec_dataH= 'd0;
+     ref_xmit_doneH= 'd0;
+     ref_xmit_active= 'd0;
+     ref_rec_readyH= 'd0;
+     ref_rec_busy= 'd0;
+
+     a= 'd0;
+     b= 'd0;
+        
     end
   endtask
 
@@ -153,10 +166,32 @@ module micro_UART_tb;
     end
   endtask
   
-  task scoreboard();
+  task compare(
+      input [$clog2(`data_len + 2)-1:0]test,
+    input [80*8:1] test_name
+  );
+      begin
+        if (compare_outputs(1)) 
+              begin 
+                $display("[PASS] %s: xmit_dataH=%d ", test_name, test);
+                cmp_pass = 1;
+              end
+        else 
+            begin
+                $display("[FAIL] %s: xmit_dataH=%d ", test_name, test);
+                display_mismatch();
+                cmp_pass = 0;
+          end
+      end
+    endtask
+
+  task scoreboard(
+        input [`data_len -1 :0]data,
+        input [80*8:1] test_name
+  );
       begin
         test_count = test_count + 1;
-        if (compare_outputs(1)) 
+          if (cmp_pass) 
           begin
             $display("[PASS] %s: xmit_dataH=0x%h ", test_name, data);
             pass_count = pass_count + 1;
@@ -164,7 +199,6 @@ module micro_UART_tb;
         else 
           begin
             $display("[FAIL] %s: xmit_dataH=0x%h ", test_name, data);
-            display_mismatch();
             fail_count = fail_count + 1;
           end
       end
