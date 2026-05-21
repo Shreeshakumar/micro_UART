@@ -18,12 +18,12 @@ module micro_UART_tb;
     wire dut_rec_busy;
     
     // Reference mode signals
-    wire ref_uart_XMIT_dataH;
-    wire [`data_len - 1 : 0]ref_rec_dataH;
-    wire ref_xmit_doneH;
-    wire ref_xmit_active;
-    wire ref_rec_readyH;
-    wire ref_rec_busy;
+    reg ref_uart_XMIT_dataH;
+    reg [`data_len - 1 : 0]ref_rec_dataH;
+    reg ref_xmit_doneH;
+    reg ref_xmit_active;
+    reg ref_rec_readyH;
+    reg ref_rec_busy;
 
     // Test counters
     integer pass_count = 0;
@@ -59,9 +59,8 @@ module micro_UART_tb;
       
     // Test transmiter Operations
     $display("\n=== Testing transmiter basic working ===");
-    toggle_rst();  xmith =0; 
-    @(posedge sys_clk);  xmitH =1; 
-    test_tx(`datalen'h5a, "basic_tx");
+    toggle_rst(); 
+    test_tx(`data_len'h5a, "basic_tx");
   /*
     // Test reciever Operations
     $display("\n=== Testing reciever basic working ===");
@@ -77,13 +76,22 @@ module micro_UART_tb;
         input [`data_len -1 :0]data,
         input [80*8:1] test_name
     );
-        begin
-            xmit_dataH = data;
-            xmitH = 1;
-
-            #delay_apply_rec;
-          
-            scoreboard();
+        integer i;
+        begin fork
+            begin
+                xmit_dataH = data;
+                xmitH =0; 
+                @(posedge sys_clk);  xmitH =1; 
+            end
+            begin
+                ref_uart_XMIT_dataH = 1;
+                @(posedge xmitH);    ref_uart_XMIT_dataH = 0;
+                for (i = 0; i < `data_len; i = i+1 )
+                    begin ref_uart_XMIT_dataH = data[i]; # delay_tx; end
+                ref_uart_XMIT_dataH = 1;
+            end
+        join 
+        scoreboard();
         end
     endtask
     /*
@@ -165,14 +173,14 @@ module micro_UART_tb;
     // Compare DUT vs REF
     function compare_outputs(input dummy);
         begin
-            compare_outputs (dut_uart_XMIT_dataH !== ref_uart_XMIT_dataH)? 1 : 0;
-            compare_outputs (dut_rec_dataH !== ref_rec_dataH) compare_outputs? 1 : 0;
+            compare_outputs =(dut_uart_XMIT_dataH !== ref_uart_XMIT_dataH)? 1 : 0;
+            compare_outputs =(dut_rec_dataH !== ref_rec_dataH)? 1 : 0;
     
-            compare_outputs (dut_xmit_doneH !== ref_xmit_doneH)? 1 : 0;
-            compare_outputs (dut_xmit_active !== ref_xmit_active)? 1 : 0;
+            compare_outputs =(dut_xmit_doneH !== ref_xmit_doneH)? 1 : 0;
+            compare_outputs =(dut_xmit_active !== ref_xmit_active)? 1 : 0;
     
-            compare_outputs (dut_rec_readyH !== ref_rec_readyH)? 1 : 0;
-            compare_outputs (dut_rec_busy !== ref_rec_busy)? 1 : 0;           
+            compare_outputs =(dut_rec_readyH !== ref_rec_readyH)? 1 : 0;
+            compare_outputs =(dut_rec_busy !== ref_rec_busy)? 1 : 0;           
         end
     endfunction
 
