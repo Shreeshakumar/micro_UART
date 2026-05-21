@@ -1,11 +1,11 @@
 `timescale 1ns / 1ps
 `default_nettype none
-module baud_clk1#(parameter BAUD=2400)(
+module baud_clk1#(parameter BAUD=2400, FREQ=100_000_000)(
     input wire clk,rst,
     output reg clk_baud
    );
    
-   localparam VAL= 100_000_000/(BAUD*16*2);
+   localparam VAL= FREQ/(BAUD*16*2);
    reg [$clog2(VAL)-1:0]count;
    always @ (posedge clk or negedge rst) begin
     if(!rst)begin
