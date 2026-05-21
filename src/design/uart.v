@@ -29,7 +29,7 @@ u_xmit 	xmit(
 		);
 		
 u_rec	rec(
-		.sys_clk(sys_clk), .sys_rst_l(sys_rst_l), .uart_REC_dataH(uart_REC_dataH),		//Main_inputs
+	/*.sys_clk(sys_clk),*/ .sys_rst_l(sys_rst_l), .uart_REC_dataH(uart_REC_dataH),		//Main_inputs
 		.rec_readyH(rec_readyH), .rec_busy(rec_busy), .rec_dataH(rec_dataH),			//Main_outputs
 		.baud_tick(baud_tick)															//Wires
 		);
