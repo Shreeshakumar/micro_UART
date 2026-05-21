@@ -122,7 +122,7 @@ module micro_UART_tb;
                 #(delay_tx);b=0;
                 compare('d0,test_name);
                 for (i = 0; i < `data_len; i = i+1 )
-                    begin uart_REC_dataH = data[i]; a=i; compare((i),test_name); #(delay_tx); end
+                    begin uart_REC_dataH = data[i]; b=i; compare((i),test_name); #(delay_tx); end
                 uart_REC_dataH = 1;
                 compare('d9,test_name);
                 #(delay_tx); 
@@ -144,6 +144,10 @@ module micro_UART_tb;
       @(posedge sys_clk);   sys_rst_l = 0;
       @(posedge sys_clk);   sys_rst_l = 1;        // Release reset
 
+    sys_clk= 0; xmitH= 0;
+    xmit_dataH= 'd0;
+    uart_REC_dataH= 'd0;
+        
         // Reference mode signals
      ref_uart_XMIT_dataH = 'd0;
      ref_rec_dataH= 'd0;
