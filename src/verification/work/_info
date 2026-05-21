@@ -1,0 +1,196 @@
+m255
+K4
+z2
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 d/fetools/work_area/frontend/Batch_11/shreeshakumar/projects/micro_UART/src/verification
+T_opt
+!s110 1779362843
+V]R4:0z=TC5gAac_gUPL6B1
+04 13 4 work micro_UART_tb fast 0
+=1-6805caf5892e-6a0eec1a-df6ef-99f4
+o-quiet -auto_acc_if_foreign -work work
+Z1 tCvgOpt 0
+n@_opt
+OE;O;10.6c;65
+vbaud_clk1
+Z2 !s110 1779362839
+!i10b 1
+!s100 fP]8IRI36O7d7F=k3Qek10
+IeFU3d0ZeLZ<9g<ebeS0Sz2
+Z3 VDg1SIo80bB@j0V0VzS_@n1
+R0
+w1779362828
+8baud_clk1.v
+Fbaud_clk1.v
+L0 3
+Z4 OE;L;10.6c;65
+r1
+!s85 0
+31
+Z5 !s108 1779362839.000000
+Z6 !s107 inc.h|xmit.v|top.v|rec.v|micro_UART_tb.v|baud_clk1.v|
+Z7 !s90 +acc|+cover|-l|log_file.log|baud_clk1.v|micro_UART_tb.v|rec.v|top.v|xmit.v|
+!i113 0
+Z8 !s102 +cover
+Z9 o+acc +cover -L mtiAvm -L mtiRnm -L mtiOvm -L mtiUvm -L mtiUPF -L infact
+R1
+vmicro_UART_tb
+R2
+!i10b 1
+!s100 @i5LXc:b>ifD9Zj9_Q8Df0
+IXm_=Mj@eaTF0j[Vh<TjXj2
+R3
+R0
+w1779362717
+8micro_UART_tb.v
+Fmicro_UART_tb.v
+L0 5
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 0
+R8
+R9
+R1
+nmicro_@u@a@r@t_tb
+vrec
+R2
+!i10b 1
+!s100 aBTBff@WJ^I5IIenTjFlF1
+IlF_KA__H9N:HmEMaDmJ;82
+R3
+R0
+Z10 w1779338911
+8rec.v
+Frec.v
+L0 4
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 0
+R8
+R9
+R1
+vref_rec
+Z11 !s110 1779339732
+!i10b 1
+!s100 KnNA4ozAB8N2<@O?L:1=j1
+I3dnPe87fdz=FVAcnEFZh[1
+R3
+R0
+R10
+8ref_rec.v
+Fref_rec.v
+Z12 L0 11
+R4
+r1
+!s85 0
+31
+Z13 !s108 1779339732.000000
+Z14 !s107 inc.h|xmit.v|top.v|ref_xmit.v|ref_uart.v|ref_rec.v|rec.v|micro_UART_tb.v|baud_clk1.v|
+Z15 !s90 +acc|+cover|-l|log_file.log|baud_clk1.v|micro_UART_tb.v|rec.v|ref_rec.v|ref_uart.v|ref_xmit.v|top.v|xmit.v|
+!i113 0
+R8
+R9
+R1
+vref_uart
+R11
+!i10b 1
+!s100 DPIKQW[9C6XDYSW^^Y@WG0
+I2CZl?mg=Aa6Xj;BNUPPoB0
+R3
+R0
+R10
+8ref_uart.v
+Fref_uart.v
+L0 5
+R4
+r1
+!s85 0
+31
+R13
+R14
+R15
+!i113 0
+R8
+R9
+R1
+vref_xmit
+R11
+!i10b 1
+!s100 9iTD`z_<[l9h6B4_g<]8Y1
+IfR5dDFDa=Go`YQ_2IVF391
+R3
+R0
+R10
+8ref_xmit.v
+Fref_xmit.v
+R12
+R4
+r1
+!s85 0
+31
+R13
+R14
+R15
+!i113 0
+R8
+R9
+R1
+vtop
+R2
+!i10b 1
+!s100 ARXJNj]l54QBCB<PZLl<Y2
+I:<CXK4J_HlU`GPaM`W5a=2
+R3
+R0
+R10
+8top.v
+Ftop.v
+L0 4
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 0
+R8
+R9
+R1
+vxmit
+R2
+!i10b 1
+!s100 A1<VCmNB3>35:9MXL<3Z01
+IGCdjA8Do:MHe:eKUOAGUY0
+R3
+R0
+R10
+8xmit.v
+Fxmit.v
+L0 3
+R4
+r1
+!s85 0
+31
+R5
+R6
+R7
+!i113 0
+R8
+R9
+R1
