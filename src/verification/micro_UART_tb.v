@@ -70,6 +70,14 @@ module micro_UART_tb;
 
     $display("\n=== Testing transmiter basic working ===");
     toggle_rst(); 
+      test_tx_xmitH(`data_len'h00, "basic_tx");
+
+    $display("\n=== Testing transmiter basic working ===");
+    toggle_rst(); 
+      test_tx_xmitH(`data_len'hff, "basic_tx");
+
+    $display("\n=== Testing transmiter basic working ===");
+    toggle_rst(); 
       test_tx_xmitHL(`data_len'h00, "basic_tx");
 
     $display("\n=== Testing transmiter basic working ===");
