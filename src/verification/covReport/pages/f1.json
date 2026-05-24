@@ -3,17 +3,17 @@ f5:{
 scopes:[{link:'z.htm?f=0&s=5',val:'work.xmit'}]
 ,FSMs:[{dummy:0}
 ,{anchor:'cvg220',items:[{c:'Y',p:'85.71',z:'state'}
-,{cr:'c',s:'1',z:'IDLE',h:'14',c:'g'}
-,{cr:'c',z:'IDLE -> START',h:'1',c:'g'}
-,{cr:'c',s:'1',z:'START',h:'2',c:'g'}
-,{cr:'c',z:'START -> DATA',h:'1',c:'g'}
-,{cr:'c',z:'START -> IDLE',h:'1',c:'g'}
-,{cr:'c',s:'1',z:'DATA',h:'1',c:'g'}
-,{cr:'c',z:'DATA -> STOP',h:'1',c:'g'}
+,{cr:'c',s:'1',z:'IDLE',h:'26',c:'g'}
+,{cr:'c',z:'IDLE -> START',h:'3',c:'g'}
+,{cr:'c',s:'1',z:'START',h:'6',c:'g'}
+,{cr:'c',z:'START -> DATA',h:'3',c:'g'}
+,{cr:'c',z:'START -> IDLE',h:'3',c:'g'}
+,{cr:'c',s:'1',z:'DATA',h:'3',c:'g'}
+,{cr:'c',z:'DATA -> STOP',h:'3',c:'g'}
 ,{cr:'m',z:'DATA -> IDLE',h:'0',c:'r'}
-,{cr:'c',s:'1',z:'STOP',h:'1',c:'g'}
+,{cr:'c',s:'1',z:'STOP',h:'3',c:'g'}
 ,{cr:'m',z:'STOP -> IDLE',h:'0',c:'r'}
-,{cr:'c',z:'STOP -> START',h:'1',c:'g'}
+,{cr:'c',z:'STOP -> START',h:'3',c:'g'}
 ]}
 
 ],
@@ -22,17 +22,17 @@ f210:{
 scopes:[{s:'7',b:'1',val:'micro_UART_tb'},{s:'164',b:'1',val:'DUT_uart'},{link:'z.htm?f=0&s=210',val:'tx1'}]
 ,FSMs:[{dummy:0}
 ,{anchor:'cvg220',items:[{c:'Y',p:'85.71',z:'state'}
-,{cr:'c',s:'1',z:'IDLE',h:'14',c:'g'}
-,{cr:'c',z:'IDLE -> START',h:'1',c:'g'}
-,{cr:'c',s:'1',z:'START',h:'2',c:'g'}
-,{cr:'c',z:'START -> DATA',h:'1',c:'g'}
-,{cr:'c',z:'START -> IDLE',h:'1',c:'g'}
-,{cr:'c',s:'1',z:'DATA',h:'1',c:'g'}
-,{cr:'c',z:'DATA -> STOP',h:'1',c:'g'}
+,{cr:'c',s:'1',z:'IDLE',h:'26',c:'g'}
+,{cr:'c',z:'IDLE -> START',h:'3',c:'g'}
+,{cr:'c',s:'1',z:'START',h:'6',c:'g'}
+,{cr:'c',z:'START -> DATA',h:'3',c:'g'}
+,{cr:'c',z:'START -> IDLE',h:'3',c:'g'}
+,{cr:'c',s:'1',z:'DATA',h:'3',c:'g'}
+,{cr:'c',z:'DATA -> STOP',h:'3',c:'g'}
 ,{cr:'m',z:'DATA -> IDLE',h:'0',c:'r'}
-,{cr:'c',s:'1',z:'STOP',h:'1',c:'g'}
+,{cr:'c',s:'1',z:'STOP',h:'3',c:'g'}
 ,{cr:'m',z:'STOP -> IDLE',h:'0',c:'r'}
-,{cr:'c',z:'STOP -> START',h:'1',c:'g'}
+,{cr:'c',z:'STOP -> START',h:'3',c:'g'}
 ]}
 
 ],
@@ -41,16 +41,16 @@ f6:{
 scopes:[{link:'z.htm?f=0&s=6',val:'work.rec'}]
 ,FSMs:[{dummy:0}
 ,{anchor:'cvg270',items:[{c:'G',p:'91.66',z:'state'}
-,{cr:'c',s:'1',z:'IDLE',h:'18',c:'g'}
-,{cr:'c',z:'IDLE -> START',h:'8',c:'g'}
-,{cr:'c',s:'1',z:'START',h:'8',c:'g'}
+,{cr:'c',s:'1',z:'IDLE',h:'36',c:'g'}
+,{cr:'c',z:'IDLE -> START',h:'16',c:'g'}
+,{cr:'c',s:'1',z:'START',h:'16',c:'g'}
 ,{cr:'m',z:'START -> IDLE',h:'0',c:'r'}
-,{cr:'c',z:'START -> DATA',h:'8',c:'g'}
-,{cr:'c',s:'1',z:'DATA',h:'8',c:'g'}
-,{cr:'c',z:'DATA -> STOP',h:'4',c:'g'}
-,{cr:'c',z:'DATA -> IDLE',h:'3',c:'g'}
-,{cr:'c',s:'1',z:'STOP',h:'4',c:'g'}
-,{cr:'c',z:'STOP -> IDLE',h:'4',c:'g'}
+,{cr:'c',z:'START -> DATA',h:'16',c:'g'}
+,{cr:'c',s:'1',z:'DATA',h:'16',c:'g'}
+,{cr:'c',z:'DATA -> STOP',h:'10',c:'g'}
+,{cr:'c',z:'DATA -> IDLE',h:'5',c:'g'}
+,{cr:'c',s:'1',z:'STOP',h:'10',c:'g'}
+,{cr:'c',z:'STOP -> IDLE',h:'10',c:'g'}
 ]}
 
 ],
@@ -59,16 +59,16 @@ f259:{
 scopes:[{s:'7',b:'1',val:'micro_UART_tb'},{s:'164',b:'1',val:'DUT_uart'},{link:'z.htm?f=0&s=259',val:'rx1'}]
 ,FSMs:[{dummy:0}
 ,{anchor:'cvg270',items:[{c:'G',p:'91.66',z:'state'}
-,{cr:'c',s:'1',z:'IDLE',h:'18',c:'g'}
-,{cr:'c',z:'IDLE -> START',h:'8',c:'g'}
-,{cr:'c',s:'1',z:'START',h:'8',c:'g'}
+,{cr:'c',s:'1',z:'IDLE',h:'36',c:'g'}
+,{cr:'c',z:'IDLE -> START',h:'16',c:'g'}
+,{cr:'c',s:'1',z:'START',h:'16',c:'g'}
 ,{cr:'m',z:'START -> IDLE',h:'0',c:'r'}
-,{cr:'c',z:'START -> DATA',h:'8',c:'g'}
-,{cr:'c',s:'1',z:'DATA',h:'8',c:'g'}
-,{cr:'c',z:'DATA -> STOP',h:'4',c:'g'}
-,{cr:'c',z:'DATA -> IDLE',h:'3',c:'g'}
-,{cr:'c',s:'1',z:'STOP',h:'4',c:'g'}
-,{cr:'c',z:'STOP -> IDLE',h:'4',c:'g'}
+,{cr:'c',z:'START -> DATA',h:'16',c:'g'}
+,{cr:'c',s:'1',z:'DATA',h:'16',c:'g'}
+,{cr:'c',z:'DATA -> STOP',h:'10',c:'g'}
+,{cr:'c',z:'DATA -> IDLE',h:'5',c:'g'}
+,{cr:'c',s:'1',z:'STOP',h:'10',c:'g'}
+,{cr:'c',z:'STOP -> IDLE',h:'10',c:'g'}
 ]}
 
 ],
