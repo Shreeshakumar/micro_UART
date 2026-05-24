@@ -67,11 +67,39 @@ module micro_UART_tb;
     $display("\n=== Testing transmiter basic working ===");
     toggle_rst(); 
       test_tx(`data_len'h5a, "basic_tx");
+
+    $display("\n=== Testing transmiter basic working ===");
+    toggle_rst(); 
+      test_tx(`data_len'h00, "basic_tx");
+
+    $display("\n=== Testing transmiter basic working ===");
+    toggle_rst(); 
+      test_tx(`data_len'hff, "basic_tx");
+
+    toggle_rst();    // sys_rst_l toggle
+    // Test reciever Operations
+    $display("\n=== Testing reciever basic working ===");
+      test_rx(start,stop,8'00, "basic_rx");
+
+    toggle_rst();    // sys_rst_l toggle
+    // Test reciever Operations
+    $display("\n=== Testing reciever basic working ===");
+      test_rx(start,stop,8'hff, "basic_rx");
       
     toggle_rst();    // sys_rst_l toggle
     // Test reciever Operations
     $display("\n=== Testing reciever basic working ===");
-    test_rx(start,stop,8'h0f, "basic_rx");
+      test_rx(start,stop,8'h5a, "basic_rx");
+
+    toggle_rst();    // sys_rst_l toggle
+    // Test reciever Operations
+    $display("\n=== Testing reciever basic working ===");
+      test_rx(start,stop,8'ha5, "basic_rx");
+
+    toggle_rst();    // sys_rst_l toggle
+    // Test reciever Operations
+    $display("\n=== Testing reciever basic working ===");
+      test_rx(start,stop,8'h5a, "basic_rx");
 
     toggle_rst();    // sys_rst_l toggle
     // Test reciever Operations
