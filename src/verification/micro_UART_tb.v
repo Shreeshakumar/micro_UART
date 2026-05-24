@@ -79,7 +79,7 @@ module micro_UART_tb;
     toggle_rst();    // sys_rst_l toggle
     // Test reciever Operations
     $display("\n=== Testing reciever basic working ===");
-      test_rx(start,stop,8'00, "basic_rx");
+      test_rx(start,stop,8'h00, "basic_rx");
 
     toggle_rst();    // sys_rst_l toggle
     // Test reciever Operations
