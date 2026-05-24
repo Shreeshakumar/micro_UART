@@ -78,6 +78,18 @@ module micro_UART_tb;
 
     $display("\n=== Testing transmiter basic working ===");
     toggle_rst(); 
+      test_tx_xmitL(`data_len'h5a, "basic_tx");
+
+    $display("\n=== Testing transmiter basic working ===");
+    toggle_rst(); 
+      test_tx_xmitL(`data_len'h00, "basic_tx");
+
+    $display("\n=== Testing transmiter basic working ===");
+    toggle_rst(); 
+      test_tx_xmitL(`data_len'hff, "basic_tx");
+
+    $display("\n=== Testing transmiter basic working ===");
+    toggle_rst(); 
       test_tx_xmitHL(`data_len'h00, "basic_tx");
 
     $display("\n=== Testing transmiter basic working ===");
@@ -163,6 +175,35 @@ module micro_UART_tb;
         end
     endtask
 
+    // Test transmitter operations
+    task test_tx_xmitL(
+        input [`data_len -1 :0]data,
+        input [80*8:1] test_name
+    );
+        integer i;
+        begin fork
+            begin
+                xmit_dataH = data;
+                xmitH =0; 
+                @(posedge sys_clk);  xmitH =0; 
+            end
+            begin
+                ref_uart_XMIT_dataH = 1;
+                @(posedge xmitH);   #(delay_rx);#(delay_rx); #(delay_rx); ref_uart_XMIT_dataH = 0;
+                #(delay_tx);a=1;
+                compare('d0,test_name);
+                for (i = 0; i < `data_len; i = i+1 )
+                    begin ref_uart_XMIT_dataH = data[i]; a=i; compare((i+1),test_name); #(delay_tx); end
+                ref_uart_XMIT_dataH = 1;
+                compare('d9,test_name);
+                #(delay_tx); 
+            end
+        join 
+            //a=1;
+            scoreboard(data,test_name);
+        end
+    endtask
+    
     // Test transmitter operations
     task test_tx_xmitHL(
         input [`data_len -1 :0]data,
