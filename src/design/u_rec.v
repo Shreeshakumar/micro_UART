@@ -57,26 +57,27 @@ module u_rec (
             temp       <= 'd0;
             rec_dataH  <= 'd0;
             match      <= 0;
-            rec_readyH <= 1;
-            rec_busy <= 0;
+            //rec_readyH <= 1;
+            //rec_busy <= 0;
             end
         else begin
             case (CS)
 
                 IDLE: begin
                         if (!rec_temp & previous_REC && rec_temp == 1'b0) 
-                            begin sample_cnt <= 'd0; temp <= 'd0; match <= 0; rec_readyH <= 1;end
+                            begin sample_cnt <= 'd0; temp <= 'd0; match <= 0; //rec_readyH <= 1;
+end
                         end
 
                 START: begin
-                rec_readyH <= 0;
+                //rec_readyH <= 0;
                             if (sample_cnt == `sampling - 1) 
                                 begin
                                 sample_cnt <= 'd0;
                                 bit_cnt    <= 'd0;
                                 match <= 0;
                                 NS <= (match)? REC : IDLE;
-                                rec_busy <= (match);
+                                //rec_busy <= (match);
                                 end 
                             else if (sample_cnt == (`sampling / 2)-2) 
                                 begin
@@ -111,8 +112,8 @@ module u_rec (
                                 rec_dataH  <= (match)? temp: 'd0;
                                 temp  <= 'd0;
                                 NS <= IDLE;
-                                rec_busy <= 0;
-                                rec_readyH <= 1;
+                                //rec_busy <= 0;
+                                //rec_readyH <= 1;
                                 end 
                             else if (sample_cnt == (`sampling / 2)-2) 
                                 begin
@@ -126,7 +127,7 @@ module u_rec (
         end
     end
 
-    //assign rec_readyH = (CS === IDLE && ~sys_rst_l);
-    //assign rec_busy   = (CS !== IDLE && sys_rst_l);
+    assign rec_readyH = (CS === IDLE && ~sys_rst_l);
+    assign rec_busy   = (CS !== IDLE && sys_rst_l);
 
 endmodule
